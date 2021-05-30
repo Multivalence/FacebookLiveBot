@@ -1,0 +1,4 @@
+discord.py
+facebook-scraper
+python-dotenv
+aiosqlite
