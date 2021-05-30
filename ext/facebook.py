@@ -50,7 +50,11 @@ class Facebook(commands.Cog):
                 username, url, user = result
 
                 channel = self.bot.get_channel(int(os.environ["ANNOUNCEMENT-CHANNEL"]))
-                await channel.send(f" @everyone {user} is live at {url}. Go check it out!")
+                
+                with open('announcement.txt','r') as textFile:
+                    text = textFile.read().format(user=user,url=url)
+                
+                await channel.send(text)
                 self.announced.append(username)
 
             else:
