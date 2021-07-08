@@ -41,8 +41,11 @@ extensions = [
 for ext in extensions:
     bot.load_extension(ext)
 
-bot.run(os.environ["TOKEN"])
 
+bot.ANNOUNCEMENT_PATH = './config/announcement.txt'
+bot.COOKIES_PATH = './config/cookies.json'
+
+bot.run(os.environ["TOKEN"])
 
 
 

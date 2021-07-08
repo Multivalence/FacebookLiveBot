@@ -12,14 +12,19 @@ class Startup(commands.Cog):
 
     async def updateStreamers(self):
 
-        async with self.bot.db.execute("SELECT username FROM streamers") as cursor:
+        async with self.bot.db.execute("SELECT * FROM streamers") as cursor:
             rows = await cursor.fetchall()
 
+            self.bot.streamers = dict()
+
+            await self.bot.wait_until_ready()
+
             try:
-                self.bot.streamers = [i[0] for i in rows]
+                for streamer, channel in rows:
+                    self.bot.streamers[streamer] = self.bot.get_channel(channel)
 
             except IndexError:
-                self.bot.streamers = list()
+                self.bot.streamers = dict()
 
 
             print(self.bot.streamers)
@@ -29,7 +34,8 @@ class Startup(commands.Cog):
         self.bot.db = await aiosqlite.connect('streamers.db')
 
         sql = """CREATE TABLE IF NOT EXISTS streamers (
-            username TEXT PRIMARY KEY)
+            username TEXT PRIMARY KEY,
+            channel BIGINT)
         """
 
         await self.bot.db.execute(sql)
@@ -49,4 +55,3 @@ class Startup(commands.Cog):
 #Setup
 def setup(bot):
     bot.add_cog(Startup(bot))
-

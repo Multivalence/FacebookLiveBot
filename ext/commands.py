@@ -46,10 +46,11 @@ class Commands(commands.Cog):
 
         try:
 
-            for _ in get_posts(username, pages=1):
+            for _ in get_posts(username, pages=1, cookies=self.bot.COOKIES_PATH):
                 break
 
-        except Exception:
+        except Exception as e:
+            print(e)
             return False
 
         else:
@@ -59,7 +60,7 @@ class Commands(commands.Cog):
     @commands.guild_only()
     @commands.has_permissions(administrator=True)
     @commands.command(name='add',description='Command to add streamer', aliases=['a'])
-    async def add(self, ctx, user : str):
+    async def add(self, ctx, user : str, channel : discord.TextChannel):
 
         await ctx.trigger_typing()
 
@@ -74,22 +75,27 @@ class Commands(commands.Cog):
 
 
         sql = 'INSERT INTO streamers(username) VALUES (?)'
+        sql2 = 'UPDATE streamers set channel = ? where username = ?'
 
         try:
-            async with self.bot.db.execute(sql, (username,)) as cursor:
-                await self.bot.db.commit()
+            await self.bot.db.execute(sql, (username,))
+            await self.bot.db.execute(sql2, (channel.id, username))
+            await self.bot.db.commit()
+
 
         except IntegrityError:
             raise StreamerAlreadyImplemented
 
         else:
-            self.bot.streamers.append(username)
+            self.bot.streamers[username] = channel
 
             embed = discord.Embed(
                 title="Action Successful",
                 description=f"Streamer Added: {user}",
                 colour=discord.Colour.green()
             )
+
+            embed.add_field(name="Announcement Channel", value=channel.mention)
 
             return await ctx.send(embed=embed)
 
@@ -113,7 +119,7 @@ class Commands(commands.Cog):
         async with self.bot.db.execute(sql, (username,)) as cursor:
             await self.bot.db.commit()
 
-        self.bot.streamers.remove(username)
+        del self.bot.streamers[username]
 
         embed = discord.Embed(
             title="Action Successful",
@@ -129,10 +135,12 @@ class Commands(commands.Cog):
     @commands.command(name='list', description='Command that lists all Streamers being Monitored', aliases=['lst','l', 'ls'])
     async def list(self, ctx):
 
-        if len(self.bot.streamers) == 0:
+        streamers = self.bot.streamers.keys()
+
+        if len(streamers) == 0:
             return await ctx.send("There are currently no Streamers being monitored. Add them via the `add` command")
 
-        mapped = '\n'.join(map(str,self.bot.streamers))
+        mapped = '\n'.join(map(str,streamers))
 
         embed = discord.Embed(
             title="List of Streamers currently being Monitored",

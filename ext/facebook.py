@@ -13,10 +13,8 @@ class Facebook(commands.Cog):
 
 
     def makeRequests(self, username):
-        #print(username)
 
-        for post in get_posts(username, pages=1):
-            #print(post)
+        for post in get_posts(username, pages=1, cookies=self.bot.COOKIES_PATH):
 
             if post['is_live']:
                 return (username, post['user_url'], post['username'])
@@ -30,7 +28,7 @@ class Facebook(commands.Cog):
 
         streamers = self.bot.streamers
 
-        if len(self.bot.streamers) == 0:
+        if len(set(self.bot.streamers.keys())) == 0:
             return
 
         for username in streamers:
@@ -49,11 +47,11 @@ class Facebook(commands.Cog):
             elif result and username not in self.announced:
                 username, url, user = result
 
-                channel = self.bot.get_channel(int(os.environ["ANNOUNCEMENT-CHANNEL"]))
-                
-                with open('announcement.txt','r') as textFile:
+                channel = streamers[username]
+
+                with open(self.bot.ANNOUNCEMENT_PATH,'r') as textFile:
                     text = textFile.read().format(user=user,url=url)
-                
+
                 await channel.send(text)
                 self.announced.append(username)
 
