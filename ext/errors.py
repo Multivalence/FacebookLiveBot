@@ -16,7 +16,7 @@ class Errors(commands.Cog):
         error = getattr(error, "original", error)
 
         if isinstance(error, commands.errors.BadArgument):
-            await ctx.send("Bad argument. Example on how to do command: `^^birthday John Jan 1`",delete_after=10)
+            await ctx.send("Bad argument.",delete_after=10)
             return
 
         elif isinstance(error, commands.errors.MissingRequiredArgument):
