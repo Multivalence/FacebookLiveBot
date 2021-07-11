@@ -26,7 +26,7 @@ class Facebook(commands.Cog):
     @tasks.loop(seconds=600)
     async def check_if_live(self):
 
-        streamers = self.bot.streamers
+        streamers = self.bot.streamers.copy()
 
         if len(set(self.bot.streamers.keys())) == 0:
             return
