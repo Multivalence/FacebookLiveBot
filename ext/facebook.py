@@ -14,7 +14,7 @@ class Facebook(commands.Cog):
 
     def makeRequests(self, username):
 
-        for post in get_posts(username, pages=1, cookies=self.bot.COOKIES_PATH):
+        for post in get_posts(username, pages=2, cookies=self.bot.COOKIES_PATH):
 
             if post['is_live']:
                 return (username, post['user_url'], post['username'])
