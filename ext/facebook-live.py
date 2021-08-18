@@ -5,15 +5,16 @@ import concurrent.futures
 from facebook_scraper import get_posts
 from discord.ext import commands, tasks
 
-class Facebook(commands.Cog):
+class FacebookLive(commands.Cog):
 
     def __init__(self, bot):
         self.bot = bot
         self.announced = list()
         self.check_if_live.start()
-        
+
         #Time is in seconds
         self.WAIT_TIME = 120
+
 
 
     def makeRequests(self, username):
@@ -36,9 +37,9 @@ class Facebook(commands.Cog):
             return
 
         for username in streamers:
-            
+
             await asyncio.sleep(self.WAIT_TIME)
-            
+
             with concurrent.futures.ThreadPoolExecutor() as pool:
                 result = await self.bot.loop.run_in_executor(pool, self.makeRequests, username)
 
@@ -75,4 +76,4 @@ class Facebook(commands.Cog):
 
 #Setup
 def setup(bot):
-    bot.add_cog(Facebook(bot))
+    bot.add_cog(FacebookLive(bot))
