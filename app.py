@@ -34,7 +34,8 @@ extensions = [
     'ext.startup',
     'ext.commands',
     'ext.errors',
-    'ext.facebook'
+    'ext.facebook-posts',
+    'ext.facebook-live'
 ]
 
 
