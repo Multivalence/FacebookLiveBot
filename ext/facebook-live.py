@@ -22,7 +22,7 @@ class FacebookLive(commands.Cog):
         for post in get_posts(username, pages=2, cookies=self.bot.COOKIES_PATH):
 
             if post['is_live']:
-                return (username, post['user_url'], post['username'])
+                return (username, post)
 
         return False
 
@@ -53,14 +53,28 @@ class FacebookLive(commands.Cog):
 
             #If Live Stream is going for particular user and has not been announced
             elif result and username not in self.announced:
-                username, url, user = result
+                username, post = result
 
                 channel = streamers[username]
 
-                with open(self.bot.ANNOUNCEMENT_PATH,'r') as textFile:
-                    text = textFile.read().format(user=user,url=url)
+                embed = discord.Embed(
+                    title=f"New Livestream by {post['username']}",
+                    description=f"[Livestream Link]({post['user_url']})",
+                    colour=discord.Colour.gold(),
+                    timestamp=post['time']
+                )
 
-                await channel.send(text)
+                embed.add_field(name="\u200b", value=post['post_text'])
+
+                if post["image_lowquality"]:
+                    embed.set_image(url=post["image_lowquality"])
+
+
+                elif post["video"]:
+                    embed.set_image(url=post["video_thumbnail"])
+
+
+                await channel.send(embed=embed)
                 self.announced.append(username)
 
             else:
