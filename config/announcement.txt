@@ -1,1 +1,0 @@
-New Stream by {user} live at {url}
