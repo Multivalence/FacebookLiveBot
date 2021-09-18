@@ -75,7 +75,7 @@ class FacebookPosts(commands.Cog):
                 timestamp=post['time']
             )
 
-            embed.add_field(name="\u200b", value=post['post_text'])
+            embed.add_field(name="\u200b", value=post['post_text'] if post['post_text'] else "\u200b")
 
             if post["image_lowquality"]:
                 embed.set_image(url=post["image_lowquality"])
